@@ -19,16 +19,28 @@ function newValidator(){
         }
         return true;
     };
+    validator.isMatching = function(value, rule){
+        if(Boolean(rule.value)){           
+            return String(value).length != rule.value;
+        }
+        return true;
+    };
     validator.validate = function(object, rules){
         const keys = Object.keys(rules);
-        const errors = [];
+        const errors = {};
         for (const key of keys){
             const value = object[key]
             for(const rule of rules[key]){
                 const ruleName = rule.rule;
                 const isPassed = validator[ruleName](value,rule);
                 if(isPassed === false){
-                    errors.push(new Error(key + " violate "+ ruleName));                    
+                    const error = new Error(ruleName);
+                    if(Array.isArray(errors[key])&& errors[key].length!=0){
+                        errors[key].push(error); 
+                    }
+                    else{
+                        errors[key]=[error];
+                    }             
                 }               
             }
         }

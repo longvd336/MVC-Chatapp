@@ -1,6 +1,8 @@
 // login page
 import register from "./register.js";
 import view from "../view.js";
+import newAuthController from "../../controllers/authController.js";
+import chat from "../chat/chat.js";
 const loginScreen = `
     <div class="container">
         <div class="row">
@@ -8,16 +10,16 @@ const loginScreen = `
                 
             </div>
             <div class="col-sm">
-                <form>
+                <form id="js-formLogin">
                 <h1>Login</h1>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                    <label for="email">Email address</label>
+                    <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
                     <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Password">
                 </div>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="exampleCheck1">
@@ -27,7 +29,6 @@ const loginScreen = `
                     <button type="button" id="js-btnMoveToRegisterPage" class="btn btn-secondary">Register</button>
                     
                 </form>
-
             </div>
             <div class="col-sm">
                 
@@ -38,12 +39,27 @@ const loginScreen = `
 `
 function onload(){
     const btnMoveToRegisterPage = document.getElementById('js-btnMoveToRegisterPage')
+    const formLogin = document.getElementById('js-formLogin');
+
     btnMoveToRegisterPage.addEventListener('click', function(){
         view.setScreen(register);
+    })
+    formLogin.addEventListener('submit', async function(event){
+        event.preventDefault();
+        const loginPayload ={
+            email: formLogin.email.value,
+            password: formLogin.password.value
+        }
+        const authController = newAuthController();
+        const res = await authController.login(loginPayload);
+        if ( res.type === "success" ){
+            view.setScreen(chat)
+        }
+        //else ... type != success
     })
 }
 const login = {
     content : loginScreen,
     onload: onload
-}
+};
 export default login;
